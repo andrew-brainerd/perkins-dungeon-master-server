@@ -7,4 +7,10 @@ router.get('/', (req, res) => {
   });
 });
 
+router.get('/humor/quote', (req, res) => {
+  res.send({
+    message: 'You are a part of the rebel alliance, and a traitor! Take her away!',
+  });
+});
+
 module.exports = router;
