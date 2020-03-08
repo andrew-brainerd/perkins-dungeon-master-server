@@ -2,7 +2,7 @@ const auth = require('../utils/auth.js');
 const playerData = require('../data/players.js');
 const status = require('../constants/statusMessages');
 
-const authPlayerMiddleware = async (req, res, next) => {
+const authPlayer = async (req, res, next) => {
   const token = auth.getTokenFromHeaders(req);
   if (!token) {
     return status.requiresAuth(res);
@@ -14,5 +14,5 @@ const authPlayerMiddleware = async (req, res, next) => {
 }
 
 module.exports = {
-  authPlayerMiddleware,
+  authPlayer,
 }

@@ -2,6 +2,7 @@ const _ = require('lodash');
 const data = require('../utils/data');
 const auth = require('../utils/auth');
 const { PLAYERS_COLELCTION, CHARACTERS_COLLECTION } = require('../constants/collections');
+const world = require('./world.js');
 
 const createPlayer = player => {
   const newPlayer = {
@@ -28,8 +29,10 @@ const getPlayerByEmail = email => {
   });
 };
 
-const createCharacter = newCharacter => {
-  return new Promise((resolve, reject) =>
+const createCharacter = async newCharacter => {
+  const spawnNode = await world.getNodeByName('Spawn');
+  newCharacter.location = spawnNode._id;
+  return await new Promise((resolve, reject) =>
     data.db.collection(CHARACTERS_COLLECTION)
       .insertOne(newCharacter, (err, { ops }) => {
         err ? reject(err) : resolve(ops[0]);
@@ -37,11 +40,20 @@ const createCharacter = newCharacter => {
   );
 };
 
+const getPlayerCharacter = (playerId, name) => {
+  return new Promise((resolve, reject) => {
+    data.db.collection(CHARACTERS_COLLECTION)
+      .find({ playerId, name })
+      .toArray((err, result) =>
+        err ? reject(err) : resolve(result[0])
+      );
+  });
+}
+
 const getCharactersForPlayer = playerId => {
   return new Promise((resolve, reject) => {
     data.db.collection(CHARACTERS_COLLECTION)
       .find({ playerId })
-      .project({ password: 0 })
       .toArray((err, result) =>
         err ? reject(err) : resolve(result)
       );
@@ -71,6 +83,7 @@ module.exports = {
   createPlayer,
   createCharacter,
   getCharactersForPlayer,
+  getPlayerCharacter,
   getPlayerByEmail,
   login,
 };

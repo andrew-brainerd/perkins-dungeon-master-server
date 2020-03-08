@@ -2,9 +2,11 @@
 const DUNGEONS_COLLECTION = 'perkinsDungeons';
 const PLAYERS_COLELCTION = 'bpPlayers';
 const CHARACTERS_COLLECTION = 'bpCharacters';
+const WORLD_COLLECTION = 'bpWorld';
 
 module.exports = {
   DUNGEONS_COLLECTION,
   PLAYERS_COLELCTION,
   CHARACTERS_COLLECTION,
+  WORLD_COLLECTION,
 };
