@@ -2,6 +2,7 @@ const {
   SUCCESS,
   CREATED,
   BAD_REQUEST,
+  AUTH_ERROR,
   DOES_NOT_EXIST,
   CONFLICT,
   SERVER_ERROR
@@ -22,14 +23,20 @@ const doesNotExist = (res, type, property, container) =>
     message: `${type} [${property}] does not exist${container ? ` in ${container}` : ''}`
   });
 
+const authError = (res, email) =>
+  res.status(AUTH_ERROR).send({
+    message: `Bad credentials or player with email [${email}] does not exist.`
+  });
+
 const alreadyExists = (res, type, property, value, container) =>
   res.status(CONFLICT).send({
-    message: `${type} with ${property} [${value}] already exists${container ? ` in ${container}` : ''}` 
+    message: `${type} with ${property} [${value}] already exists${container ? ` in ${container}` : ''}`
   });
 
 const serverError = (res, error, message) => res.status(SERVER_ERROR).send({ message, error });
 
 module.exports = {
+  authError,
   success,
   created,
   missingQueryParam,

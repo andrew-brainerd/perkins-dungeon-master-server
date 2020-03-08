@@ -2,6 +2,7 @@
 const SUCCESS = 200;
 const CREATED = 201;
 const BAD_REQUEST = 400;
+const AUTH_ERROR = 401;
 const DOES_NOT_EXIST = 404;
 const CONFLICT = 409;
 const SERVER_ERROR = 500;
@@ -10,6 +11,7 @@ module.exports = {
   SUCCESS,
   CREATED,
   BAD_REQUEST,
+  AUTH_ERROR,
   DOES_NOT_EXIST,
   CONFLICT,
   SERVER_ERROR
