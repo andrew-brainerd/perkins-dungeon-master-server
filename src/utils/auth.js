@@ -28,6 +28,10 @@ const generateJWT = player => {
   }, 'secret');
 }
 
+const decodeJWT = token => {
+  return webtoken.decode(token, { secret: 'secret' });
+}
+
 const toAuthJSON = player => {
   return {
     _id: player._id,
@@ -64,8 +68,10 @@ const authOpts = { session: false };
 module.exports = {
   authOpts,
   authConfig,
+  decodeJWT,
   encryptPassword,
   generateJWT,
+  getTokenFromHeaders,
   toAuthJSON,
   validateLogin,
 }

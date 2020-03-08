@@ -28,6 +28,11 @@ const authError = (res, email) =>
     message: `Bad credentials or player with email [${email}] does not exist.`
   });
 
+const requiresAuth = (res) =>
+  res.status(AUTH_ERROR).send({
+   message: 'This route requires auth.',
+  });
+
 const alreadyExists = (res, type, property, value, container) =>
   res.status(CONFLICT).send({
     message: `${type} with ${property} [${value}] already exists${container ? ` in ${container}` : ''}`
@@ -43,5 +48,6 @@ module.exports = {
   missingBodyParam,
   doesNotExist,
   alreadyExists,
+  requiresAuth,
   serverError
 };
