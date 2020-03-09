@@ -53,4 +53,18 @@ player.get('/character/:characterName/status', middleware.authPlayer, async (req
   });
 });
 
+player.put('/character/:characterName/location', middleware.authPlayer, async (req, res) => {
+  const character = await playerData.getPlayerCharacter(req.player._id, req.params.characterName);
+  const location = await worldData.getNodeById(character.location);
+
+  const { body: { direction } } = req;
+  const connections = location.connections.filter(x => x.direction === direction);
+  if (connections.length === 0) {
+    return status.doesNotExist(res, 'location', direction, 'directions')
+  } else {
+    await playerData.moveCharacter(character._id, connections[0].node);
+    return status.success(res);
+  }
+});
+
 module.exports = player;

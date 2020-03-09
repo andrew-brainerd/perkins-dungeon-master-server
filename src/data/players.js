@@ -60,6 +60,15 @@ const getCharactersForPlayer = playerId => {
   });
 }
 
+const moveCharacter = (_id, location) => {
+  return new Promise((resolve, reject) => {
+    data.db.collection(CHARACTERS_COLLECTION)
+      .updateOne({ _id }, { $set: { location } }, (err) => {
+        err ? reject(err) : resolve()
+      })
+  });
+}
+
 /** Grody prototype method. Returns the player and a token if they exist and passwords match.
  *  Othersise undefined.
  */
@@ -83,6 +92,7 @@ module.exports = {
   createPlayer,
   createCharacter,
   getCharactersForPlayer,
+  moveCharacter,
   getPlayerCharacter,
   getPlayerByEmail,
   login,
