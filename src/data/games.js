@@ -15,6 +15,11 @@ const createGame = async (name, createdBy) => {
   return newGame;
 };
 
+const getGame = async gameId => {
+  return await data.getById(DUNGEONS_COLLECTION, gameId);
+};
+
 module.exports = {
-  createGame
+  createGame,
+  getGame
 };
