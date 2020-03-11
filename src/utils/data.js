@@ -8,6 +8,8 @@ const dbName = process.env.DB_NAME;
 
 const mongoOptions = { useNewUrlParser: true, useUnifiedTopology: true };
 
+var db;
+
 const connectToMongoDB = async () => {
   mongo.connect(dbUri, mongoOptions, (err, client) => {
     if (err) {
@@ -16,7 +18,7 @@ const connectToMongoDB = async () => {
       return;
     }
 
-    exports.db = client.db(dbName);
+    db = client.db(dbName);
 
     log.cool(`Connected to DB: ${dbName}`);
     connect(true);
@@ -25,6 +27,21 @@ const connectToMongoDB = async () => {
 
 const connect = async (connected) => !connected && connectToMongoDB();
 
-exports.calculateTotalPages = (items, size) => items > size ? Math.ceil(items / size) : 1;
+const calculateTotalPages = (items, size) => items > size ? Math.ceil(items / size) : 1;
 
 connect();
+
+const insertOne = async (collection, document) => {
+  return new Promise((resolve, reject) => {
+    db.collection(collection)
+      .insertOne(document, (err, { ops }) => {
+        err ? reject(err) : resolve(ops[0]);
+      });
+  });
+}
+
+module.exports = {
+  db,
+  calculateTotalPages,
+  insertOne
+};
