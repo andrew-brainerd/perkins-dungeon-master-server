@@ -10,7 +10,15 @@ const postGameBody = Joi.object({
 });
 
 const getGameParams = Joi.object({
-  gameId: Joi.string().required(),
+  gameId: Joi.string().required()
+});
+
+const putGameLogParams = Joi.object({
+  gameId: Joi.string().required()
+});
+
+const putGameLogBody = Joi.object({
+  logs: Joi.object().required()
 });
 
 games.post('/', validator.body(postGameBody), async (req, res) => {
@@ -29,14 +37,14 @@ games.get('/:gameId', validator.params(getGameParams), async (req, res) => {
   return status.success(res, { ...game });
 });
 
-games.put('/:gameId/logs', async (req, res) => {
-  const { params: { gameId }, body: { logs } } = req;
+games.put('/:gameId/logs',
+  validator.params(putGameLogParams),
+  validator.body(putGameLogBody),
+  async (req, res) => {
+    const { params: { gameId }, body: { logs } } = req;
 
-  if (!isDefined(gameId)) return status.missingQueryParam(res, 'gameId');
-  if (!logs) return status.missingBodyParam(res, 'logs');
-
-  const logAdded = await gamesData.addLog(gameId, { logs });
-  return status.success(res, { ...logAdded });
-});
+    const logAdded = await gamesData.addLog(gameId, { logs });
+    return status.success(res, { ...logAdded });
+  });
 
 module.exports = games;
