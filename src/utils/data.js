@@ -51,9 +51,25 @@ const getById = async (collection, id) => {
   });
 };
 
+const updateOne = async (collection, id, update) => {
+  return new Promise((resolve, reject) => {
+    db.collection(collection)
+    .updateOne(
+      { _id: ObjectId(id) },
+      { $addToSet: update },
+      (err, { matchedCount, modifiedCount }) => {
+        if (err) reject(err);
+        const alreadyExists = matchedCount === 1 && modifiedCount === 0;
+        resolve({ alreadyExists, id });
+      }
+    );
+  })
+};
+
 module.exports = {
   db,
   calculateTotalPages,
   insertOne,
-  getById
+  getById,
+  updateOne
 };
