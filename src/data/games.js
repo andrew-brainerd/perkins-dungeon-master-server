@@ -19,7 +19,12 @@ const getGame = async gameId => {
   return await data.getById(DUNGEONS_COLLECTION, gameId);
 };
 
+const addLog = async (gameId, newLog) => {
+  return await data.updateOne(DUNGEONS_COLLECTION, gameId, newLog);
+};
+
 module.exports = {
   createGame,
-  getGame
+  getGame,
+  addLog
 };
