@@ -1,6 +1,7 @@
 /* eslint node/exports-style: off */
 
 const mongo = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 const log = require('./log');
 
 const dbUri = process.env.MONGODB_URI;
@@ -38,10 +39,21 @@ const insertOne = async (collection, document) => {
         err ? reject(err) : resolve(ops[0]);
       });
   });
-}
+};
+
+const getById = async (collection, id) => {
+  return new Promise((resolve, reject) => {
+    db.collection(collection)
+      .find({ _id: ObjectId(id) })
+      .toArray((err, result) =>
+        err ? reject(err) : resolve(result[0])
+      );
+  });
+};
 
 module.exports = {
   db,
   calculateTotalPages,
-  insertOne
+  insertOne,
+  getById
 };
