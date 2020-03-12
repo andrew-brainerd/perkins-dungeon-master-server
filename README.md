@@ -5,17 +5,17 @@
 Install dependencies
 
 ```bash
-> npm install
+> yarn
 ```
 
 Develop (hot reload on save)
 
 ```bash
-> npm run dev
+> yarn run dev
 ```
 
 Run
 
 ```bash
-> npm start
+> yarn start
 ```

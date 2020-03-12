@@ -1,14 +1,20 @@
+const Joi = require('joi');
 const multiplayer = require('express').Router();
 const { pusher } = require('../../utils/pusher');
-const { isDefined } = require('../../utils/url');
 const status = require('../../constants/statusMessages');
 const { UPDATE_GAME } = require('../../constants/pusher');
+const { validator } = require('../../utils/validator');
 
-multiplayer.post('/', async (req, res) => {
+const postMultiplayerQuery = Joi.object({
+  gameId: Joi.string().required(),
+});
+
+const postMultiplayerBody = Joi.object({
+  game: Joi.object().required(),
+});
+
+multiplayer.post('/', validator.query(postMultiplayerQuery), validator.body(postMultiplayerBody), async (req, res) => {
   const { query: { gameId }, body: { game } } = req;
-
-  if (!isDefined(gameId)) return status.missingQueryParam(res, 'gameId');
-  if (!game) return status.missingBodyParam(res, 'game');
 
   pusher.trigger(gameId, UPDATE_GAME, { ...game });
 
