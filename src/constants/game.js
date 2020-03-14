@@ -1,5 +1,13 @@
-const AUTH_USER = 'Auth User';
-const GAME_MASTER = 'Game Master';
+const AUTH_USER = {
+  character: 'Auth User',
+  color: 'orange'
+};
+
+const GAME_MASTER = {
+  character: 'Game Master',
+  color: '#7383BF'
+};
+
 const UPDATE_GAME = 'updateGame';
 
 module.exports = {
