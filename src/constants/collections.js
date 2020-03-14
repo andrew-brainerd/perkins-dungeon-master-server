@@ -1,5 +1,5 @@
 
-const DUNGEONS_COLLECTION = 'perkinsDungeons';
+const DUNGEONS_COLLECTION = 'perkinsGames';
 
 module.exports = {
   DUNGEONS_COLLECTION
