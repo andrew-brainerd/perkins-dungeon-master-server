@@ -9,7 +9,7 @@ const postGameBody = Joi.object({
   createdBy: Joi.string().required()
 });
 
-const getGameParams = Joi.object({
+const defaultGameParams = Joi.object({
   gameId: Joi.string().required()
 });
 
@@ -21,6 +21,10 @@ const putGameLogBody = Joi.object({
   logs: Joi.object().required()
 });
 
+const putGameBody = Joi.object({
+  message: Joi.object().required()
+});
+
 games.post('/', validator.body(postGameBody), async (req, res) => {
   const { body: { name, createdBy } } = req;
 
@@ -30,12 +34,22 @@ games.post('/', validator.body(postGameBody), async (req, res) => {
   return status.created(res, { ...newGame });
 });
 
-games.get('/:gameId', validator.params(getGameParams), async (req, res) => {
+games.get('/:gameId', validator.params(defaultGameParams), async (req, res) => {
   const { params: { gameId } } = req;
 
   const game = await gamesData.getGame(gameId);
   return status.success(res, { ...game });
 });
+
+games.put('/:gameId',
+  validator.params(defaultGameParams),
+  validator.body(putGameBody),
+  async (req, res) => {
+    const { params: { gameId }, body: { message } } = req;
+
+    const logAdded = await gamesData.addLog(gameId, { messages: message });
+    return status.success(res, { ...logAdded });
+  });
 
 games.put('/:gameId/logs',
   validator.params(putGameLogParams),
