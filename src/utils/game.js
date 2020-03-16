@@ -1,6 +1,5 @@
 const { AUTH_USER, GAME_MASTER } = require('../constants/game');
 const { v1: uuidv1 } = require('uuid');
-const log = require('../utils/log');
 
 const getUniqueMessage = message => ({
   messages: {
@@ -12,7 +11,7 @@ const getUniqueMessage = message => ({
 
 const parseUserInput = userInput => {
   const { messages: { message } } = userInput || {};
-  log.cool('Parsing User Input: %o', userInput);
+
   if (message === 'login' || message === 'signin') {
     return getUniqueMessage({
       ...AUTH_USER,
