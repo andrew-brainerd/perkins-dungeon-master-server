@@ -5,6 +5,7 @@ const log = require('../utils/log');
 const getUniqueMessage = message => ({
   messages: {
     id: uuidv1(),
+    timestamp: new Date(),
     ...message
   }
 });
