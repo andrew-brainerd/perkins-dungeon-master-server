@@ -34,6 +34,24 @@ games.post('/', validator.body(postGameBody), async (req, res) => {
   return status.created(res, { ...newGame });
 });
 
+games.get('/', async (req, res) => {
+  const { query: { pageNum, pageSize, userEmail } } = req;
+  const page = parseInt(pageNum) || 1;
+  const size = parseInt(pageSize) || 50;
+
+  const { items, totalItems, totalPages } = await gamesData.getGames(page, size, userEmail);
+  
+  if (!games) return status.serverError(res, 'Failed', 'Failed to get user games');
+
+  return status.success(res, {
+    items,
+    pageNum: page,
+    pageSize: size,
+    totalItems,
+    totalPages
+  });
+});
+
 games.get('/:gameId', validator.params(defaultGameParams), async (req, res) => {
   const { params: { gameId } } = req;
 

@@ -18,6 +18,10 @@ const createGame = async (name, createdBy) => {
   return newGame;
 };
 
+const getGames = async (page, size, userEmail) => {
+  return await data.getSome(GAMES_COLLECTION, page, size, 'createdBy', userEmail);
+};
+
 const getGame = async gameId => {
   return await data.getById(GAMES_COLLECTION, gameId);
 };
@@ -41,6 +45,7 @@ const addLog = async (gameId, message) => {
 
 module.exports = {
   createGame,
+  getGames,
   getGame,
   addLog
 };

@@ -32,18 +32,41 @@ const calculateTotalPages = (items, size) => items > size ? Math.ceil(items / si
 
 connect();
 
-const insertOne = async (collection, document) => {
+const insertOne = async (collectionName, document) => {
   return new Promise((resolve, reject) => {
-    db.collection(collection)
+    db.collection(collectionName)
       .insertOne(document, (err, { ops }) => {
         err ? reject(err) : resolve(ops[0]);
       });
   });
 };
 
-const getById = async (collection, id) => {
+const getSome = async (collectionName, page, size, identifier, idValue) => {
+  console.log({ collectionName, page, size, identifier, idValue });
+  const collection = db.collection(collectionName);
+  const totalItems = await collection.countDocuments({});
+  const totalPages = calculateTotalPages(totalItems, size);
+
   return new Promise((resolve, reject) => {
-    db.collection(collection)
+    const query = identifier && idValue ? { [identifier]: idValue } : {};
+    collection
+      .find(query)
+      .skip(size * (page - 1))
+      .limit(size)
+      .sort({ $natural: -1 })
+      .toArray((err, items) => {
+        err ? reject(err) : resolve({
+          items,
+          totalItems,
+          totalPages
+        });
+      });
+  });
+};
+
+const getById = async (collectionName, id) => {
+  return new Promise((resolve, reject) => {
+    db.collection(collectionName)
       .find({ _id: ObjectId(id) })
       .toArray((err, result) =>
         err ? reject(err) : resolve(result[0])
@@ -51,9 +74,9 @@ const getById = async (collection, id) => {
   });
 };
 
-const updateOne = async (collection, id, update) => {
+const updateOne = async (collectionName, id, update) => {
   return new Promise((resolve, reject) => {
-    db.collection(collection)
+    db.collection(collectionName)
     .updateOne(
       { _id: ObjectId(id) },
       { $addToSet: update },
@@ -70,6 +93,7 @@ module.exports = {
   db,
   calculateTotalPages,
   insertOne,
+  getSome,
   getById,
   updateOne
 };
