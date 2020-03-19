@@ -4,7 +4,7 @@ const data = require('../utils/data');
 const log = require('../utils/log');
 const { pusher } = require('../utils/pusher');
 const { UPDATE_GAME } = require('../constants/pusher');
-const { GAMES_COLLECTION } = require('../constants/collections');
+const { GAMES_COLLECTION, CHARACTERS_COLLECTION } = require('../constants/collections');
 const { AUTH_USER, GAME_MASTER } = require('../constants/game');
 
 const createGame = async (name, createdBy) => {
@@ -29,10 +29,7 @@ const getGame = async gameId => {
 };
 
 const getGameCharacters = async gameId => {
-  const game = await getGame(gameId);
-  const characters = ((game || {}).characters) || [];
-
-  return characters;
+  return await data.getSome(CHARACTERS_COLLECTION, 1, 50, 'gameId', gameId);
 };
 
 const addLog = async (gameId, message) => {
@@ -84,16 +81,15 @@ const parsePlayerInput = async playerInput => {
       });
     }
   } else if (message === 'char' || message === 'characters') {
-    const characters = await getGameCharacters(gameId);
+    const characters = await getGameCharacters(gameId).items || [];
 
     return getUniqueMessage({
       ...GAME_MASTER,
       message: !isEmpty(characters) ?
-        `Game Characters:
-        <pre>
+        `<pre>
         ${characters.map(({ name }) =>
-          `<span>Name: </span><span>${name}</span>`)
-        }
+          `<div><span>Name: </span><span>${name}</span></div>`
+        )}
         </pre>` :
         'No characters in this game yet'
     });

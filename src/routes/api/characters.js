@@ -5,19 +5,19 @@ const status = require('../../constants/statusMessages');
 const { validator } = require('../../utils/validator');
 
 const postCharacterBody = Joi.object({
+  gameId: Joi.string().required(),
   name: Joi.string().required(),
-  createdBy: Joi.string().required(),
-  gameId: Joi.string().required()
+  createdBy: Joi.string().required()
 });
 
-const defaultCharacterParams = Joi.object({
-  gameId: Joi.string().required()
-});
+// const defaultCharacterParams = Joi.object({
+//   gameId: Joi.string().required()
+// });
 
 characters.post('/', validator.body(postCharacterBody), async (req, res) => {
-  const { body: { name, createdBy } } = req;
+  const { body: { gameId, name, createdBy } } = req;
 
-  const newCharacter = await charactersData.createCharacter({ name, createdBy });
+  const newCharacter = await charactersData.createCharacter({ gameId, name, createdBy });
   if (!newCharacter) return status.serverError(res, 'Failed', `Failed to create character [${name}]`);
 
   return status.created(res, { ...newCharacter });
@@ -47,11 +47,11 @@ characters.get('/', validator.query(getCharacterQuery), async (req, res) => {
   });
 });
 
-characters.get('/:characterId', validator.params(defaultCharacterParams), async (req, res) => {
-  const { params: { gameId } } = req;
+// characters.get('/:characterId', validator.params(defaultCharacterParams), async (req, res) => {
+//   const { params: { gameId } } = req;
 
-  const game = await charactersData.getGameCharacters(gameId);
-  return status.success(res, { ...game });
-});
+//   const game = await charactersData.getCharacter(gameId);
+//   return status.success(res, { ...game });
+// });
 
 module.exports = characters;
