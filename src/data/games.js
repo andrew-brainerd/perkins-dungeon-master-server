@@ -81,13 +81,14 @@ const parsePlayerInput = async playerInput => {
       });
     }
   } else if (message === 'char' || message === 'characters') {
-    const characters = await getGameCharacters(gameId).items || [];
+    const characters = await getGameCharacters(gameId);
+    const gameCharacters = characters.items || [];
 
     return getUniqueMessage({
       ...GAME_MASTER,
-      message: !isEmpty(characters) ?
+      message: !isEmpty(gameCharacters) ?
         `<pre>
-        ${characters.map(({ name }) =>
+        ${gameCharacters.map(({ name }) =>
           `<div><span>Name: </span><span>${name}</span></div>`
         )}
         </pre>` :
