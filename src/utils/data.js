@@ -73,6 +73,16 @@ const getById = async (collectionName, id) => {
   });
 };
 
+const getByProperty = (collectionName, property, value) => {
+  return new Promise((resolve, reject) => {
+    db.collection(collectionName)
+      .find({ [property]: value })
+      .toArray((err, result) =>
+        err ? reject(err) : resolve(result[0])
+      );
+  });
+};
+
 const updateOne = async (collectionName, id, update) => {
   return new Promise((resolve, reject) => {
     try {
@@ -99,5 +109,6 @@ module.exports = {
   insertOne,
   getSome,
   getById,
+  getByProperty,
   updateOne
 };

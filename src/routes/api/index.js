@@ -14,5 +14,7 @@ router.get('/humor/quote', (req, res) => {
 });
 
 router.use('/games', require('./games'));
+router.use('/characters', require('./characters'));
+router.use('/players', require('./players'));
 
 module.exports = router;

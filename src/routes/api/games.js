@@ -39,7 +39,7 @@ games.get('/', validator.query(getGameQuery), async (req, res) => {
 
   const { items, totalItems, totalPages } = await gamesData.getGames(page, size, userEmail);
   
-  if (!games) return status.serverError(res, 'Failed', 'Failed to get user games');
+  if (!items) return status.serverError(res, 'Failed', 'Failed to get user games');
 
   return status.success(res, {
     items,
