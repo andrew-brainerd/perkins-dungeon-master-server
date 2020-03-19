@@ -20,8 +20,8 @@ const createGame = async (name, createdBy) => {
   return newGame;
 };
 
-const getGames = async (page, size, playerEmail) => {
-  return await data.getSome(GAMES_COLLECTION, page, size, 'createdBy', playerEmail);
+const getGames = async (page, size, playerId) => {
+  return await data.getSome(GAMES_COLLECTION, page, size, 'createdBy', playerId);
 };
 
 const getGame = async gameId => {

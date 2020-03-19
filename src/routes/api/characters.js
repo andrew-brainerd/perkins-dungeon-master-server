@@ -26,15 +26,15 @@ characters.post('/', validator.body(postCharacterBody), async (req, res) => {
 const getCharacterQuery = Joi.object({
   pageNum: Joi.number(),
   pageSize: Joi.number(),
-  playerEmail: Joi.string()
+  playerId: Joi.string()
 });
 
 characters.get('/', validator.query(getCharacterQuery), async (req, res) => {
-  const { query: { pageNum, pageSize, playerEmail } } = req;
+  const { query: { pageNum, pageSize, playerId } } = req;
   const page = parseInt(pageNum) || 1;
   const size = parseInt(pageSize) || 50;
 
-  const { items, totalItems, totalPages } = await charactersData.getPlayerCharacters(page, size, playerEmail);
+  const { items, totalItems, totalPages } = await charactersData.getPlayerCharacters(page, size, playerId);
   
   if (!items) return status.serverError(res, 'Failed', 'Failed to get player characters');
 
