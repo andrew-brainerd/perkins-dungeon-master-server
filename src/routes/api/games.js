@@ -13,14 +13,6 @@ const defaultGameParams = Joi.object({
   gameId: Joi.string().required()
 });
 
-const putGameLogParams = Joi.object({
-  gameId: Joi.string().required()
-});
-
-const putGameLogBody = Joi.object({
-  logs: Joi.object().required()
-});
-
 const putGameBody = Joi.object({
   message: Joi.object().required()
 });
@@ -35,8 +27,8 @@ games.post('/', validator.body(postGameBody), async (req, res) => {
 });
 
 const getGameQuery = Joi.object({
-  pageNum: Joi.number().required(),
-  pageSize: Joi.number().required(),
+  pageNum: Joi.number(),
+  pageSize: Joi.number(),
   userEmail: Joi.string().required()
 });
 
@@ -72,16 +64,6 @@ games.put('/:gameId',
     const { params: { gameId }, body: { message } } = req;
 
     const logAdded = await gamesData.addLog(gameId, { messages: message });
-    return status.success(res, { ...logAdded });
-  });
-
-games.put('/:gameId/logs',
-  validator.params(putGameLogParams),
-  validator.body(putGameLogBody),
-  async (req, res) => {
-    const { params: { gameId }, body: { logs } } = req;
-
-    const logAdded = await gamesData.addLog(gameId, { logs });
     return status.success(res, { ...logAdded });
   });
 

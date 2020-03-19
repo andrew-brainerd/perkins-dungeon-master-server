@@ -42,7 +42,6 @@ const insertOne = async (collectionName, document) => {
 };
 
 const getSome = async (collectionName, page, size, identifier, idValue) => {
-  console.log({ collectionName, page, size, identifier, idValue });
   const collection = db.collection(collectionName);
   const totalItems = await collection.countDocuments({});
   const totalPages = calculateTotalPages(totalItems, size);
@@ -76,16 +75,21 @@ const getById = async (collectionName, id) => {
 
 const updateOne = async (collectionName, id, update) => {
   return new Promise((resolve, reject) => {
-    db.collection(collectionName)
-    .updateOne(
-      { _id: ObjectId(id) },
-      { $addToSet: update },
-      (err, { matchedCount, modifiedCount }) => {
-        if (err) reject(err);
-        const alreadyExists = matchedCount === 1 && modifiedCount === 0;
-        resolve({ alreadyExists, id });
-      }
-    );
+    try {
+      db.collection(collectionName)
+        .updateOne(
+          { _id: ObjectId(id) },
+          { $addToSet: update },
+          (err, result) => {
+            const { matchedCount, modifiedCount } = result || {};
+            if (err) reject(err);
+            const alreadyExists = matchedCount === 1 && modifiedCount === 0;
+            resolve({ alreadyExists, id });
+          }
+        );
+    } catch (err) {
+      reject(err);
+    }
   })
 };
 
