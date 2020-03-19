@@ -10,7 +10,7 @@ const createCharacter = async character => {
   return newCharacter;
 };
 
-const getUserCharacters = async (page, size, playerId) => {
+const getPlayerCharacters = async (page, size, playerId) => {
   return await data.getSome(CHARACTERS_COLLECTION, page, size, 'createdBy', playerId);
 };
 
@@ -24,7 +24,7 @@ const getCharacter = async characterId => {
 
 module.exports = {
   createCharacter,
-  getUserCharacters,
+  getPlayerCharacters,
   getGameCharacters,
   getCharacter
 };

@@ -30,7 +30,6 @@ players.get('/email', validator.query(getPlayerByEmailQuery), async (req, res) =
   const { query: { email } } = req;
 
   const player = await playersData.getPlayerByEmail(email);
-  console.log('Player: ', player);
 
   return status.success(res, { doesNotExist: !player, ...player });
 });
@@ -48,7 +47,7 @@ players.get('/:playerId/characters',
     const page = parseInt(pageNum) || 1;
     const size = parseInt(pageSize) || 50;
 
-    const { items, totalItems, totalPages } = await playersData.getUserCharacters(page, size, playerId);
+    const { items, totalItems, totalPages } = await playersData.getPlayerCharacters(page, size, playerId);
 
     if (!items) return status.serverError(res, 'Failed', 'Failed to get player characters');
 

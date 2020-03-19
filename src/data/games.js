@@ -20,8 +20,8 @@ const createGame = async (name, createdBy) => {
   return newGame;
 };
 
-const getGames = async (page, size, userEmail) => {
-  return await data.getSome(GAMES_COLLECTION, page, size, 'createdBy', userEmail);
+const getGames = async (page, size, playerEmail) => {
+  return await data.getSome(GAMES_COLLECTION, page, size, 'createdBy', playerEmail);
 };
 
 const getGame = async gameId => {
@@ -36,16 +36,16 @@ const getGameCharacters = async gameId => {
 };
 
 const addLog = async (gameId, message) => {
-  const serverResponse = await parseUserInput(message);
-  const appendUserMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
+  const serverResponse = await parsePlayerInput(message);
+  const appendPlayerMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
   const appendServerMessage = await data.updateOne(GAMES_COLLECTION, gameId, serverResponse);
 
-  pusher.trigger(gameId, UPDATE_GAME, { appendUserMessage, appendServerMessage });
+  pusher.trigger(gameId, UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
 
   return {
     gameId,
-    userMessage: message,
-    userMessageStatus: appendUserMessage,
+    playerMessage: message,
+    playerMessageStatus: appendPlayerMessage,
     serverMessageStatus: appendServerMessage
   };
 };
@@ -58,8 +58,8 @@ const getUniqueMessage = message => ({
   }
 });
 
-const parseUserInput = async userInput => {
-  const { messages: { gameId, message } } = userInput || {};
+const parsePlayerInput = async playerInput => {
+  const { messages: { gameId, message } } = playerInput || {};
 
   if (message === 'login' || message === 'signin') {
     return getUniqueMessage({
@@ -101,13 +101,13 @@ const parseUserInput = async userInput => {
     return getUniqueMessage({
       ...GAME_MASTER,
       message: 'Create A New Character',
-      requiresUserInput: true
+      requiresPlayerInput: true
     });
   }
 
   return getUniqueMessage({
     ...GAME_MASTER,
-    message: 'Unrecognized user input'
+    message: 'Unrecognized player input'
   });
 };
 

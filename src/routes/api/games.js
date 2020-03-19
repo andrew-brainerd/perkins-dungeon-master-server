@@ -29,17 +29,17 @@ games.post('/', validator.body(postGameBody), async (req, res) => {
 const getGameQuery = Joi.object({
   pageNum: Joi.number(),
   pageSize: Joi.number(),
-  userEmail: Joi.string().required()
+  playerEmail: Joi.string().required()
 });
 
 games.get('/', validator.query(getGameQuery), async (req, res) => {
-  const { query: { pageNum, pageSize, userEmail } } = req;
+  const { query: { pageNum, pageSize, playerEmail } } = req;
   const page = parseInt(pageNum) || 1;
   const size = parseInt(pageSize) || 50;
 
-  const { items, totalItems, totalPages } = await gamesData.getGames(page, size, userEmail);
+  const { items, totalItems, totalPages } = await gamesData.getGames(page, size, playerEmail);
   
-  if (!items) return status.serverError(res, 'Failed', 'Failed to get user games');
+  if (!items) return status.serverError(res, 'Failed', 'Failed to get player games');
 
   return status.success(res, {
     items,
