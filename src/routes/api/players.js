@@ -36,7 +36,7 @@ players.get('/email', validator.query(getPlayerByEmailQuery), async (req, res) =
 
 const getCharactersQuery = Joi.object({
   pageNum: Joi.number(),
-  pageSize: Joi.number(),
+  pageSize: Joi.number()
 });
 
 players.get('/:playerId/characters',

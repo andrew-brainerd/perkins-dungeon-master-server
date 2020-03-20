@@ -10,10 +10,6 @@ const postCharacterBody = Joi.object({
   createdBy: Joi.string().required()
 });
 
-// const defaultCharacterParams = Joi.object({
-//   gameId: Joi.string().required()
-// });
-
 characters.post('/', validator.body(postCharacterBody), async (req, res) => {
   const { body: { gameId, name, createdBy } } = req;
 
@@ -46,12 +42,5 @@ characters.get('/', validator.query(getCharacterQuery), async (req, res) => {
     totalPages
   });
 });
-
-// characters.get('/:characterId', validator.params(defaultCharacterParams), async (req, res) => {
-//   const { params: { gameId } } = req;
-
-//   const game = await charactersData.getCharacter(gameId);
-//   return status.success(res, { ...game });
-// });
 
 module.exports = characters;
