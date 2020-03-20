@@ -84,14 +84,16 @@ const parsePlayerInput = async playerInput => {
     const characters = await getGameCharacters(gameId);
     const gameCharacters = characters.items || [];
 
+
+    let serverMessage = '';
+    gameCharacters.map(({ name }) =>
+      serverMessage += `<div><span>Name: </span><span>${name}</span></div>`
+    );
+
     return getUniqueMessage({
       ...GAME_MASTER,
       message: !isEmpty(gameCharacters) ?
-        `<pre>
-        ${gameCharacters.map(({ name }) =>
-          `<div><span>Name: </span><span>${name}</span></div>`
-        )}
-        </pre>` :
+        serverMessage :
         'No characters in this game yet'
     });
   } else if (message === 'newCharacter') {
