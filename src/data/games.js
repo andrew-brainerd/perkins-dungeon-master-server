@@ -4,7 +4,7 @@ const data = require('../utils/data');
 const log = require('../utils/log');
 const { pusher } = require('../utils/pusher');
 const { UPDATE_GAME } = require('../constants/pusher');
-const { GAMES_COLLECTION } = require('../constants/collections');
+const { GAMES_COLLECTION, CHARACTERS_COLLECTION } = require('../constants/collections');
 const { AUTH_USER, GAME_MASTER } = require('../constants/game');
 
 const createGame = async (name, createdBy) => {
@@ -20,8 +20,8 @@ const createGame = async (name, createdBy) => {
   return newGame;
 };
 
-const getGames = async (page, size, userEmail) => {
-  return await data.getSome(GAMES_COLLECTION, page, size, 'createdBy', userEmail);
+const getGames = async (page, size, playerId) => {
+  return await data.getSome(GAMES_COLLECTION, page, size, 'createdBy', playerId);
 };
 
 const getGame = async gameId => {
@@ -29,23 +29,20 @@ const getGame = async gameId => {
 };
 
 const getGameCharacters = async gameId => {
-  const game = await getGame(gameId);
-  const characters = ((game || {}).characters) || [];
-
-  return characters;
+  return await data.getSome(CHARACTERS_COLLECTION, 1, 50, 'gameId', gameId);
 };
 
 const addLog = async (gameId, message) => {
-  const serverResponse = await parseUserInput(message);
-  const appendUserMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
+  const serverResponse = await parsePlayerInput(message);
+  const appendPlayerMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
   const appendServerMessage = await data.updateOne(GAMES_COLLECTION, gameId, serverResponse);
 
-  pusher.trigger(gameId, UPDATE_GAME, { appendUserMessage, appendServerMessage });
+  pusher.trigger(gameId, UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
 
   return {
     gameId,
-    userMessage: message,
-    userMessageStatus: appendUserMessage,
+    playerMessage: message,
+    playerMessageStatus: appendPlayerMessage,
     serverMessageStatus: appendServerMessage
   };
 };
@@ -58,8 +55,8 @@ const getUniqueMessage = message => ({
   }
 });
 
-const parseUserInput = async userInput => {
-  const { messages: { gameId, message } } = userInput || {};
+const parsePlayerInput = async playerInput => {
+  const { messages: { gameId, message } } = playerInput || {};
 
   if (message === 'login' || message === 'signin') {
     return getUniqueMessage({
@@ -85,29 +82,31 @@ const parseUserInput = async userInput => {
     }
   } else if (message === 'char' || message === 'characters') {
     const characters = await getGameCharacters(gameId);
+    const gameCharacters = characters.items || [];
+
+
+    let serverMessage = '';
+    gameCharacters.map(({ name }) =>
+      serverMessage += `<div><span>Name: </span><span>${name}</span></div>`
+    );
 
     return getUniqueMessage({
       ...GAME_MASTER,
-      message: !isEmpty(characters) ?
-        `Game Characters:
-        <pre>
-        ${characters.map(({ name }) =>
-          `<span>Name: </span><span>${name}</span>`)
-        }
-        </pre>` :
+      message: !isEmpty(gameCharacters) ?
+        serverMessage :
         'No characters in this game yet'
     });
   } else if (message === 'newCharacter') {
     return getUniqueMessage({
       ...GAME_MASTER,
       message: 'Create A New Character',
-      requiresUserInput: true
+      requiresPlayerInput: true
     });
   }
 
   return getUniqueMessage({
     ...GAME_MASTER,
-    message: 'Unrecognized user input'
+    message: 'Unrecognized player input'
   });
 };
 
