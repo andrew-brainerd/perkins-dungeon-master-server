@@ -28,11 +28,11 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "lint:js": "eslint src/"
+    "lint": "eslint src/"
   },
   "husky": {
     "hooks": {
-      "pre-push": "npm run lint:js"
+      "pre-push": "npm run lint"
     }
   }
 }
