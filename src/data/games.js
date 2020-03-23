@@ -6,6 +6,7 @@ const { pusher } = require('../utils/pusher');
 const { UPDATE_GAME } = require('../constants/pusher');
 const { GAMES_COLLECTION, CHARACTERS_COLLECTION } = require('../constants/collections');
 const { AUTH_USER, GAME_MASTER } = require('../constants/game');
+const { command, Format, processText, CommandResult } = require('directo');
 
 const createGame = async (name, createdBy) => {
   const newGame = await data.insertOne(
@@ -55,33 +56,61 @@ const getUniqueMessage = message => ({
   }
 });
 
-const parsePlayerInput = async playerInput => {
-  const { messages: { gameId, message } } = playerInput || {};
+command({
+  verb: ['login', 'signin'],
+  accept: [ Format.V ],
+  async func({ context }) {
+    const { playerInput } = context;
+    context.response = getUniqueMessage({
+      ...AUTH_USER,
+      message: playerInput.messages.isAuthenticated ? 'Already signed in :D' : 'Signing In...'
+    });
 
-  if (message === 'login' || message === 'signin') {
-    return getUniqueMessage({
+    return CommandResult.HANDLED;
+  }
+});
+
+command({
+  verb: [ 'logout', 'signout' ],
+  accept: [ Format.V ],
+  async func({ context }) {
+    const { playerInput } = context;
+    context.response = getUniqueMessage({
       ...AUTH_USER,
-      message: message.isAuthenticated ? 'Already signed in :D' : 'Signing In...'
+      message: playerInput.messages.isAuthenticated ? 'Signing Out...' : 'Not signed in'
     });
-  } else if (message === 'logout' || message === 'signout') {
-    return getUniqueMessage({
-      ...AUTH_USER,
-      message: message.isAuthenticated ? 'Signing Out...' : 'Not signed in'
-    });
-  } else if (message === 'newgame') {
-    if (message.isAuthenticated) {
-      return getUniqueMessage({
+
+    return CommandResult.HANDLED;
+  }
+});
+
+command({
+  verb: 'newgame',
+  accept: [ Format.V ],
+  async func({ context }) {
+    const { playerInput } = context;
+    if (playerInput.messages.isAuthenticated) {
+      context.response = getUniqueMessage({
         ...GAME_MASTER,
         message: 'Starting a new game...'
       });
     } else {
-      return getUniqueMessage({
+      context.response = getUniqueMessage({
         ...AUTH_USER,
         message: 'Please sign in first'
       });
     }
-  } else if (message === 'char' || message === 'characters') {
-    const characters = await getGameCharacters(gameId);
+
+    return CommandResult.HANDLED;
+  }
+});
+
+command({
+  verb: [ 'char', 'characters' ],
+  accept: [ Format.V ],
+  async func({ context }) {
+    const { playerInput } = context;
+    const characters = await getGameCharacters(playerInput.messages.gameId);
     const gameCharacters = characters.items || [];
 
 
@@ -90,18 +119,38 @@ const parsePlayerInput = async playerInput => {
       serverMessage += `<div><span>Name: </span><span>${name}</span></div>`
     );
 
-    return getUniqueMessage({
+    context.response = getUniqueMessage({
       ...GAME_MASTER,
       message: !isEmpty(gameCharacters) ?
         serverMessage :
         'No characters in this game yet'
     });
-  } else if (message === 'newCharacter') {
-    return getUniqueMessage({
+
+    return CommandResult.HANDLED;
+  }
+});
+
+command({
+  verb: [ 'newCharacter' ],
+  accept: [ Format.V ],
+  async func({ context }) {
+    context.response = getUniqueMessage({
       ...GAME_MASTER,
       message: 'Create A New Character',
       requiresPlayerInput: true
     });
+
+    return CommandResult.HANDLED;
+  }
+});
+
+const parsePlayerInput = async playerInput => {
+  const { messages: { message } } = playerInput || {};
+  const processContext = { playerInput };
+
+  const processResult = await processText(message, processContext);
+  if (processResult === CommandResult.HANDLED) {
+    return processContext.response;
   }
 
   return getUniqueMessage({
