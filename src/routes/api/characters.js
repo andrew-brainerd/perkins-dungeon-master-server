@@ -1,19 +1,16 @@
 const Joi = require('joi');
 const characters = require('express').Router();
+const { characterConstants } = require('gm-common');
 const charactersData = require('../../data/characters');
-const status = require('../../constants/statusMessages');
+const status = require('../../utils/statusMessages');
 const { validator } = require('../../utils/validator');
-const {
-  CHARACTER_CLASSES,
-  CHARACTER_RACES,
-} = require('../../constants/game');
 
 const postCharacterBody = Joi.object({
   gameId: Joi.string().required(),
   playerId: Joi.string().required(),
   name: Joi.string().required(),
-  class: Joi.string().valid(CHARACTER_CLASSES).required(),
-  race: Joi.string().valid(CHARACTER_RACES).required()
+  class: Joi.string().valid(characterConstants.classes).required(),
+  race: Joi.string().valid(characterConstants.races).required()
 });
 
 characters.post('/', validator.body(postCharacterBody), async (req, res) => {
