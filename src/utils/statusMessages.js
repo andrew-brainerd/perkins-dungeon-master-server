@@ -5,7 +5,7 @@ const {
   DOES_NOT_EXIST,
   CONFLICT,
   SERVER_ERROR
-} = require('./responseCodes');
+} = require('../constants/responseCodes');
 
 const success = (res, body) => res.status(SUCCESS).send(body);
 

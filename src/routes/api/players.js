@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const players = require('express').Router();
 const playersData = require('../../data/players');
-const status = require('../../constants/statusMessages');
+const status = require('../../utils/statusMessages');
 const { validator } = require('../../utils/validator');
 
 const postPlayerBody = Joi.object({

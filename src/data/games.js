@@ -1,11 +1,10 @@
 const { v1: uuidv1 } = require('uuid');
 const { isEmpty } = require('ramda');
+const { syncConstants, characterConstants } = require('gm-common');
 const data = require('../utils/data');
 const log = require('../utils/log');
 const { pusher } = require('../utils/pusher');
-const { UPDATE_GAME } = require('../constants/pusher');
 const { GAMES_COLLECTION, CHARACTERS_COLLECTION } = require('../constants/collections');
-const { AUTH_USER, GAME_MASTER } = require('../constants/game');
 const { command, Format, processText, CommandResult } = require('directo');
 
 const createGame = async (name, createdBy) => {
@@ -38,7 +37,7 @@ const addLog = async (gameId, message) => {
   const appendPlayerMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
   const appendServerMessage = await data.updateOne(GAMES_COLLECTION, gameId, serverResponse);
 
-  pusher.trigger(gameId, UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
+  pusher.trigger(gameId, syncConstants.UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
 
   return {
     gameId,
@@ -58,11 +57,11 @@ const getUniqueMessage = message => ({
 
 command({
   verb: ['login', 'signin'],
-  accept: [ Format.V ],
+  accept: [Format.V],
   async func({ context }) {
     const { playerInput } = context;
     context.response = getUniqueMessage({
-      ...AUTH_USER,
+      ...characterConstants.AUTH_USER,
       message: playerInput.messages.isAuthenticated ? 'Already signed in :D' : 'Signing In...'
     });
 
@@ -71,12 +70,12 @@ command({
 });
 
 command({
-  verb: [ 'logout', 'signout' ],
-  accept: [ Format.V ],
+  verb: ['logout', 'signout'],
+  accept: [Format.V],
   async func({ context }) {
     const { playerInput } = context;
     context.response = getUniqueMessage({
-      ...AUTH_USER,
+      ...characterConstants.AUTH_USER,
       message: playerInput.messages.isAuthenticated ? 'Signing Out...' : 'Not signed in'
     });
 
@@ -86,17 +85,17 @@ command({
 
 command({
   verb: 'newgame',
-  accept: [ Format.V ],
+  accept: [Format.V],
   async func({ context }) {
     const { playerInput } = context;
     if (playerInput.messages.isAuthenticated) {
       context.response = getUniqueMessage({
-        ...GAME_MASTER,
+        ...characterConstants.GAME_MASTER,
         message: 'Starting a new game...'
       });
     } else {
       context.response = getUniqueMessage({
-        ...AUTH_USER,
+        ...characterConstants.AUTH_USER,
         message: 'Please sign in first'
       });
     }
@@ -106,8 +105,8 @@ command({
 });
 
 command({
-  verb: [ 'char', 'characters' ],
-  accept: [ Format.V ],
+  verb: ['char', 'characters'],
+  accept: [Format.V],
   async func({ context }) {
     const { playerInput } = context;
     const characters = await getGameCharacters(playerInput.messages.gameId);
@@ -115,12 +114,16 @@ command({
 
 
     let serverMessage = '';
-    gameCharacters.map(({ name }) =>
-      serverMessage += `<div><span>Name: </span><span>${name}</span></div>`
+    gameCharacters.map(({ name, class: charClass, race, level, ...rest }) => {
+      serverMessage += '<div style="border: 1px dashed white; padding: 15px;">';
+      console.log({ name, ...rest });
+      serverMessage += `<div>${name}</div>`;
+      serverMessage += `<div>Level ${level} ${race} ${charClass}</div>`;
+      serverMessage += '</div>';
+    }
     );
 
     context.response = getUniqueMessage({
-      ...GAME_MASTER,
       message: !isEmpty(gameCharacters) ?
         serverMessage :
         'No characters in this game yet'
@@ -131,11 +134,11 @@ command({
 });
 
 command({
-  verb: [ 'newCharacter' ],
-  accept: [ Format.V ],
+  verb: ['newCharacter'],
+  accept: [Format.V],
   async func({ context }) {
     context.response = getUniqueMessage({
-      ...GAME_MASTER,
+      ...characterConstants.GAME_MASTER,
       message: 'Create A New Character',
       requiresPlayerInput: true
     });
@@ -154,7 +157,7 @@ const parsePlayerInput = async playerInput => {
   }
 
   return getUniqueMessage({
-    ...GAME_MASTER,
+    ...characterConstants.GAME_MASTER,
     message: 'Unrecognized player input'
   });
 };
