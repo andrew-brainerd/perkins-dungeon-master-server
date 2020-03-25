@@ -9,9 +9,12 @@ const postCharacterBody = Joi.object({
   gameId: Joi.string().required(),
   playerId: Joi.string().required(),
   name: Joi.string().required(),
-  class: Joi.string().valid(characterConstants.classes).required(),
-  race: Joi.string().valid(characterConstants.races).required()
+  class: Joi.string().valid(characterConstants.classTypes).required(),
+  race: Joi.string().valid(characterConstants.raceTypes).required()
 });
+
+console.log('Class Types: %o', characterConstants.classTypes);
+console.log('Race Types: %o', characterConstants.raceTypes);
 
 characters.post('/', validator.body(postCharacterBody), async (req, res) => {
   const { body: { createdBy, ...attributes } } = req;
