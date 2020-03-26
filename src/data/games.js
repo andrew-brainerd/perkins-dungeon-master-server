@@ -1,6 +1,6 @@
 const { v1: uuidv1 } = require('uuid');
 const { isEmpty } = require('ramda');
-const { syncConstants, characterConstants } = require('gm-common');
+const { syncing, characters } = require('gm-common');
 const data = require('../utils/data');
 const log = require('../utils/log');
 const { pusher } = require('../utils/pusher');
@@ -37,7 +37,7 @@ const addLog = async (gameId, message) => {
   const appendPlayerMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
   const appendServerMessage = await data.updateOne(GAMES_COLLECTION, gameId, serverResponse);
 
-  pusher.trigger(gameId, syncConstants.UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
+  pusher.trigger(gameId, syncing.UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
 
   return {
     gameId,
@@ -61,7 +61,7 @@ command({
   async func({ context }) {
     const { playerInput } = context;
     context.response = getUniqueMessage({
-      ...characterConstants.AUTH_USER,
+      ...characters.AUTH_USER,
       message: playerInput.messages.isAuthenticated ? 'Already signed in :D' : 'Signing In...'
     });
 
@@ -75,7 +75,7 @@ command({
   async func({ context }) {
     const { playerInput } = context;
     context.response = getUniqueMessage({
-      ...characterConstants.AUTH_USER,
+      ...characters.AUTH_USER,
       message: playerInput.messages.isAuthenticated ? 'Signing Out...' : 'Not signed in'
     });
 
@@ -90,12 +90,12 @@ command({
     const { playerInput } = context;
     if (playerInput.messages.isAuthenticated) {
       context.response = getUniqueMessage({
-        ...characterConstants.GAME_MASTER,
+        ...characters.GAME_MASTER,
         message: 'Starting a new game...'
       });
     } else {
       context.response = getUniqueMessage({
-        ...characterConstants.AUTH_USER,
+        ...characters.AUTH_USER,
         message: 'Please sign in first'
       });
     }
@@ -138,7 +138,7 @@ command({
   accept: [Format.V],
   async func({ context }) {
     context.response = getUniqueMessage({
-      ...characterConstants.GAME_MASTER,
+      ...characters.GAME_MASTER,
       message: 'Create A New Character',
       requiresPlayerInput: true
     });
@@ -157,7 +157,7 @@ const parsePlayerInput = async playerInput => {
   }
 
   return getUniqueMessage({
-    ...characterConstants.GAME_MASTER,
+    ...characters.GAME_MASTER,
     message: 'Unrecognized player input'
   });
 };
