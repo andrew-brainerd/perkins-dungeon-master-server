@@ -31,7 +31,8 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "lint": "eslint src/",
-    "test": "cd tests && pipenv install && pipenv run pytest"
+    "setup": "cd tests && pipenv install",
+    "test": "cd tests && pipenv run pytest"
   },
   "husky": {
     "hooks": {
