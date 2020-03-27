@@ -26,13 +26,13 @@ games.post('/', validator.body(postGameBody), async (req, res) => {
   return status.created(res, { ...newGame });
 });
 
-const getGameQuery = Joi.object({
+const getPlayerGamesQuery = Joi.object({
   pageNum: Joi.number(),
   pageSize: Joi.number(),
   playerId: Joi.string().required()
 });
 
-games.get('/', validator.query(getGameQuery), async (req, res) => {
+games.get('/', validator.query(getPlayerGamesQuery), async (req, res) => {
   const { query: { pageNum, pageSize, playerId } } = req;
   const page = parseInt(pageNum) || 1;
   const size = parseInt(pageSize) || 50;
