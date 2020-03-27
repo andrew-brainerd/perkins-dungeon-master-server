@@ -114,7 +114,7 @@ command({
 
 
     let serverMessage = '';
-    gameCharacters.map(({ name, class: charClass, race, level, ...rest }) => {
+    gameCharacters.map(({ name, class: charClass, race, level }) => {
       serverMessage += '<div style="border: 1px dashed white; padding: 15px;">';
       serverMessage += `<div>${name}</div>`;
       serverMessage += `<div>Level ${level} ${race} ${charClass}</div>`;

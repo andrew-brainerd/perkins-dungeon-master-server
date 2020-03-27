@@ -1,5 +1,20 @@
 const router = require('express').Router();
 
+/**
+ * @swagger
+ * /api:
+ *  get:
+ *    name: root
+ *    summary: API Root
+ *    produces:
+ *      - application/json
+ *    consumes:
+ *      - application/json
+ *    responses:
+ *      '200':
+ *        description: Welcome to the Anorak API!
+ */
+
 router.get('/', (req, res) => {
   res.send({
     message: `Welcome to the Anorak API!`
@@ -15,6 +30,5 @@ router.get('/humor/quote', (req, res) => {
 router.use('/games', require('./games'));
 router.use('/characters', require('./characters'));
 router.use('/players', require('./players'));
-router.use('/docs', require('./docs'));
 
 module.exports = router;
