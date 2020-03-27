@@ -1,9 +1,9 @@
 const Joi = require('joi');
 const characters = require('express').Router();
 const { characters: characterDefinitions } = require('gm-common');
-const charactersData = require('../../data/characters');
-const status = require('../../utils/statusMessages');
-const { validator } = require('../../utils/validator');
+const charactersData = require('../data/characters');
+const status = require('../utils/statusMessages');
+const { validator } = require('../utils/validator');
 
 const postCharacterBody = Joi.object({
   gameId: Joi.string().required(),
