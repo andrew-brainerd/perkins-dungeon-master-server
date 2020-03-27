@@ -13,9 +13,6 @@ const postCharacterBody = Joi.object({
   race: Joi.string().valid(characterDefinitions.raceTypes).required()
 });
 
-console.log('Class Types: %o', characterDefinitions.classTypes);
-console.log('Race Types: %o', characterDefinitions.raceTypes);
-
 characters.post('/', validator.body(postCharacterBody), async (req, res) => {
   const { body: { createdBy, ...attributes } } = req;
 
