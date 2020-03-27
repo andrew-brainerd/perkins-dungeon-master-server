@@ -63,3 +63,24 @@ def test_get_player_games_success():
   assert len(playerGames['items']) > 0
   for game in playerGames['items']:
     assert game['createdBy'] == '12345'
+
+def test_get_game_success():
+  url = f'{baseUrl}/api/games'
+
+  new_game = {
+    'name': 'Test New Game',
+    'createdBy': '12345'
+  }
+
+  create_response = requests.request('POST', url, data=json.dumps(new_game), headers=headers)
+  gameId = create_response.json()['_id']
+
+  url = f'{url}/{gameId}'
+
+  response = requests.request('GET', url)
+  game = response.json()
+
+  print(game)
+  assert response.status_code == 200
+  assert game['_id'] == gameId
+  assert game['name'] == 'Test New Game'
