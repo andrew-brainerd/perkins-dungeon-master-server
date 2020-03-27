@@ -4,6 +4,31 @@ const gamesData = require('../../data/games');
 const status = require('../../utils/statusMessages');
 const { validator } = require('../../utils/validator');
 
+/**
+ * @swagger
+ * path:
+ *   /games:
+ *     get:
+ *       summary: Get Game
+ *       description: Returns an object describing the game
+ *       tags:
+ *         - animals
+ *       parameters:
+ *         - in: query
+ *           name: gameId
+ *           type: string
+ *           required: true
+ *       responses:
+ *         200:
+ *           description: Game Object
+ *           schema:
+ *             type: object
+ *             properties:
+ *               gameId:
+ *                 type: string
+ *                 description: Game Identifier
+ */
+
 const postGameBody = Joi.object({
   name: Joi.string().required(),
   createdBy: Joi.string().required()
@@ -38,7 +63,7 @@ games.get('/', validator.query(getPlayerGamesQuery), async (req, res) => {
   const size = parseInt(pageSize) || 50;
 
   const { items, totalItems, totalPages } = await gamesData.getGames(page, size, playerId);
-  
+
   if (!items) return status.serverError(res, 'Failed', 'Failed to get player games');
 
   return status.success(res, {
