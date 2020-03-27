@@ -5,7 +5,7 @@ headers = {'Content-Type': 'application/json' }
 
 baseUrl = 'http://localhost:5000'
 
-def test_createGameSuccess():
+def test_create_game_success():
   url = f'{baseUrl}/api/games'
 
   game = {
@@ -14,14 +14,14 @@ def test_createGameSuccess():
   }
 
   response = requests.request('POST', url, data=json.dumps(game), headers=headers)
-  body = response.json()
+  game = response.json()
 
   assert response.status_code == 201
-  assert body['name'] == 'Test New Game'
-  assert body['createdBy'] == '12345'
-  assert body['members'][0] == '12345'
+  assert game['name'] == 'Test New Game'
+  assert game['createdBy'] == '12345'
+  assert game['members'][0] == '12345'
 
-def test_createGameMissingName():
+def test_create_game_missing_name():
   url = f'{baseUrl}/api/games'
 
   game = {
@@ -35,7 +35,7 @@ def test_createGameMissingName():
   assert 'ValidationError' in body['message']
   assert '["name" is required]' in body['message']
 
-def test_createGameMissingCreatedBy():
+def test_create_game_missing_created_by():
   url = f'{baseUrl}/api/games'
 
   game = {
