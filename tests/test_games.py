@@ -48,3 +48,18 @@ def test_create_game_missing_created_by():
   assert response.status_code == 400
   assert 'ValidationError' in body['message']
   assert '["createdBy" is required]' in body['message']
+
+def test_get_player_games_success():
+  url = f'{baseUrl}/api/games'
+
+  params = {
+    'playerId': '12345'
+  }
+
+  response = requests.request('GET', url, params=params)
+  playerGames = response.json()
+
+  assert response.status_code == 200
+  assert len(playerGames['items']) > 0
+  for game in playerGames['items']:
+    assert game['createdBy'] == '12345'
