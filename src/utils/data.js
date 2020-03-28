@@ -3,6 +3,7 @@
 const mongo = require('mongodb').MongoClient;
 const ObjectId = require('mongodb').ObjectId;
 const log = require('./log');
+const { omit } = require('lodash');
 
 const dbUri = process.env.MONGODB_URI;
 const dbName = process.env.DB_NAME;
@@ -83,6 +84,26 @@ const getByProperty = (collectionName, property, value) => {
   });
 };
 
+const getByProperties = (collectionName, query) => {
+  return new Promise((resolve, reject) => {
+    db.collection(collectionName)
+      .find(query)
+      .toArray((err, result) =>
+        err ? reject(err) : resolve(result[0])
+      );
+  });
+};
+
+const getAllByProperty = (collectionName, property, value) => {
+  return new Promise((resolve, reject) => {
+    db.collection(collectionName)
+      .find({ [property]: value })
+      .toArray((err, result) =>
+        err ? reject(err) : resolve(result)
+      );
+  });
+};
+
 const updateOne = async (collectionName, id, update) => {
   return new Promise((resolve, reject) => {
     try {
@@ -103,6 +124,22 @@ const updateOne = async (collectionName, id, update) => {
   })
 };
 
+const saveObject = async(collectionName, item) => {
+  return new Promise((resolve, reject) => {
+    try {
+      db.collection(collectionName)
+        .update(
+          { _id: item._id },
+          { $set: omit(item, '_id')},
+          { upsert: true },
+          err => err ? reject(err) : resolve()
+        );
+    } catch(err) {
+      reject(err);
+    }
+  });
+}
+
 module.exports = {
   db,
   calculateTotalPages,
@@ -110,5 +147,8 @@ module.exports = {
   getSome,
   getById,
   getByProperty,
-  updateOne
+  getByProperties,
+  getAllByProperty,
+  updateOne,
+  saveObject
 };
