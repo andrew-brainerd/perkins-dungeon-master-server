@@ -1041,10 +1041,10 @@ globals@^12.1.0:
   dependencies:
     type-fest "^0.8.1"
 
-gm-common@0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/gm-common/-/gm-common-0.0.6.tgz#632d59db43909ba7d6e1079039eb2b17caf24760"
-  integrity sha512-fnyrqQ4/D3o6nepJUrmzwpTTYau8lPY1gmyBUVnHlaZwhUBgpglY60ZEDTrzFC9RYkCOroT3STCIApTMJWjeUg==
+gm-common@0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/gm-common/-/gm-common-0.0.7.tgz#95e0992eb083e14bc9265e0983488e40f38f5f03"
+  integrity sha512-QTRPo4MiuXsNMPlua+AF4ZNOZxEhRnW8R7vYfBRxPdWshcMYdYYnt1jNNfoQNgBQyM+RDk4PwLfPquAVayQTZg==
 
 got@^6.7.1:
   version "6.7.1"
