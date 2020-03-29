@@ -1,17 +1,13 @@
-const Joi = require('joi');
 const players = require('express').Router();
 const playersData = require('../data/players');
 const status = require('../utils/statusMessages');
 const { validator } = require('../utils/validator');
-
-const postPlayerBody = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required()
-});
-
-const defaultPlayerParams = Joi.object({
-  playerId: Joi.string().required()
-});
+const {
+  postPlayerBody,
+  defaultPlayerParams,
+  getPlayerByEmailQuery,
+  getCharactersQuery
+} = require('./validation/players');
 
 players.post('/', validator.body(postPlayerBody), async (req, res) => {
   const { body: { name, email } } = req;
@@ -22,21 +18,12 @@ players.post('/', validator.body(postPlayerBody), async (req, res) => {
   return status.created(res, { ...newPlayer });
 });
 
-const getPlayerByEmailQuery = Joi.object({
-  email: Joi.string()
-});
-
 players.get('/email', validator.query(getPlayerByEmailQuery), async (req, res) => {
   const { query: { email } } = req;
 
   const player = await playersData.getPlayerByEmail(email);
 
   return status.success(res, { doesNotExist: !player, ...player });
-});
-
-const getCharactersQuery = Joi.object({
-  pageNum: Joi.number(),
-  pageSize: Joi.number()
 });
 
 players.get('/:playerId/characters',
