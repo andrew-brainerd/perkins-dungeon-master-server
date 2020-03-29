@@ -1,8 +1,8 @@
 const Joi = require('joi');
 const games = require('express').Router();
-const gamesData = require('../../data/games');
-const status = require('../../utils/statusMessages');
-const { validator } = require('../../utils/validator');
+const gamesData = require('../data/games');
+const status = require('../utils/statusMessages');
+const { validator } = require('../utils/validator');
 
 const postGameBody = Joi.object({
   name: Joi.string().required(),
