@@ -6,6 +6,11 @@ const log = require('../utils/log');
 const { pusher } = require('../utils/pusher');
 const { GAMES_COLLECTION, CHARACTERS_COLLECTION } = require('../constants/collections');
 const { command, Format, processText, CommandResult } = require('directo');
+const { getCharacterByName } = require('./characters');
+const { getItemByName } = require('./items');
+const { articleForNoun, withUnits } = require('../utils/grammar');
+const { addItemToInventory, getCarryRatio, getInventory } = require('../gameLogic/inventory');
+const { WEIGHT } = require('../constants/units');
 
 const createGame = async (name, createdBy) => {
   const newGame = await data.insertOne(
@@ -141,6 +146,121 @@ command({
       ...characters.GAME_MASTER,
       message: 'Create A New Character',
       requiresPlayerInput: true
+    });
+
+    return CommandResult.HANDLED;
+  }
+});
+
+command({
+  verb: ['gm-give'],
+  accept: [Format.VOPS, Format.VSDO],
+  async func({ subject, object, context }) {
+    const { playerInput: { messages: { gameId } } } = context;
+    const character = await getCharacterByName(subject, gameId);
+    if (!character) {
+      context.response = getUniqueMessage({
+        ...characters.GAME_MASTER,
+        message: `Who is ${subject}?`
+      });
+
+      return CommandResult.HANDLED;
+    }
+
+    const item = await getItemByName(object);
+    if (!item) {
+      context.response = getUniqueMessage({
+        ...characters.GAME_MASTER,
+        message: `What is ${articleForNoun(object)} ${object}?`
+      });
+
+      return CommandResult.HANDLED;
+    }
+
+    const addResult = await addItemToInventory(character, item);
+    const ratioString = `(${addResult.carryRatio.current}/${addResult.carryRatio.max})`;
+
+    if (addResult.added) {
+      context.response = getUniqueMessage({
+        ...characters.GAME_MASTER,
+        message: `Okay, ${subject} gets the ${object}. Their carry capacity is now ${ratioString}`
+      });
+    } else {
+      context.response = getUniqueMessage({
+        ...characters.GAME_MASTER,
+        message: `${object} (${withUnits(item.weight, WEIGHT)}) is too heavy for ${subject} to carry ${ratioString}`
+      });
+    }
+
+    return CommandResult.HANDLED;
+  }
+});
+
+command({
+  verb: ['gm-show'],
+  accept: [Format.VOPS],
+  async func({ subject, object, context }) {
+    const { playerInput: { messages: { gameId } } } = context;
+    const character = await getCharacterByName(subject, gameId);
+    if (!character) {
+      context.response = getUniqueMessage({
+        ...characters.GAME_MASTER,
+        message: `Who is ${subject}?`
+      });
+
+      return CommandResult.HANDLED;
+    }
+
+    if (object.toLowerCase() !== 'inventory') {
+      context.response = getUniqueMessage({
+        ...characters.GAME_MASTER,
+        message: `Cannot show ${object} for ${subject}.`
+      });
+
+      return CommandResult.HANDLED;
+    }
+
+    const rawInventory = await getInventory(character);
+    const inventory = rawInventory.reduce((counts, item) => {
+      const currentCount = counts[item._id];
+      if (!currentCount) {
+        counts[item._id] = { ...item, count: 1 };
+      } else {
+        currentCount.count++;
+        counts[item._id] = currentCount;
+      }
+
+      return counts;
+    }, {});
+
+    const ratio = await getCarryRatio(character);
+
+    const table = `
+      <table style="border: 1px dashed white; padding: 15px; text-align: left;">
+        <tr>
+          <th>Name</th>
+          <th>Count</th>
+          <th>Weight</th>
+        </tr>
+        ${
+          Object.values(inventory).map(item => `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.count}</td>
+            <td>${withUnits(item.weight, WEIGHT)}</td>
+          </tr>
+          `).join('')
+        }
+        <tr>
+          <td colspan=2>Carry Capacity</td>
+          <td>${ratio.current}/${ratio.max}</td>
+        </tr>
+      </table>
+    `;
+
+    context.response = getUniqueMessage({
+      ...characters.GAME_MASTER,
+      message: table
     });
 
     return CommandResult.HANDLED;
