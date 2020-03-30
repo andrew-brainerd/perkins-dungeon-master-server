@@ -10,6 +10,7 @@ const { getCharacterByName } = require('./characters');
 const { getItemByName } = require('./items');
 const { articleForNoun, withUnits } = require('../utils/grammar');
 const { addItemToInventory, getCarryRatio, getInventory } = require('../gameLogic/inventory');
+const { getRaceFromType, getClassFromType } = require('../utils/characters');
 const { WEIGHT } = require('../constants/units');
 
 const createGame = async (name, createdBy) => {
@@ -120,10 +121,12 @@ command({
 
     let serverMessage = '';
     gameCharacters.map(({ name, class: charClass, race, level, ...rest }) => {
+      const gameCharRace = getRaceFromType(race).name;
+      const gameCharClass = getClassFromType(charClass).name;
       serverMessage += '<div style="border: 1px dashed white; padding: 15px;">';
       console.log({ name, ...rest });
       serverMessage += `<div>${name}</div>`;
-      serverMessage += `<div>Level ${level} ${race} ${charClass}</div>`;
+      serverMessage += `<div>Level ${level} ${gameCharRace} ${gameCharClass}</div>`;
       serverMessage += '</div>';
     }
     );
