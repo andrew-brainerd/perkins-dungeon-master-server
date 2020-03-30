@@ -1,21 +1,13 @@
-const Joi = require('joi');
 const games = require('express').Router();
-const gamesData = require('../../data/games');
-const status = require('../../utils/statusMessages');
-const { validator } = require('../../utils/validator');
-
-const postGameBody = Joi.object({
-  name: Joi.string().required(),
-  createdBy: Joi.string().required()
-});
-
-const defaultGameParams = Joi.object({
-  gameId: Joi.string().required()
-});
-
-const putGameBody = Joi.object({
-  message: Joi.object().required()
-});
+const gamesData = require('../data/games');
+const status = require('../utils/statusMessages');
+const { validator } = require('../utils/validator');
+const {
+  postGameBody,
+  defaultGameParams,
+  putGameBody,
+  getPlayerGamesQuery
+} = require('./validation/games');
 
 games.post('/', validator.body(postGameBody), async (req, res) => {
   const { body: { name, createdBy } } = req;
@@ -24,12 +16,6 @@ games.post('/', validator.body(postGameBody), async (req, res) => {
   if (!newGame) return status.serverError(res, 'Failed', `Failed to create pod [${name}]`);
 
   return status.created(res, { ...newGame });
-});
-
-const getPlayerGamesQuery = Joi.object({
-  pageNum: Joi.number(),
-  pageSize: Joi.number(),
-  playerId: Joi.string().required()
 });
 
 games.get('/', validator.query(getPlayerGamesQuery), async (req, res) => {

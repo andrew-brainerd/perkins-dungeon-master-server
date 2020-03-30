@@ -1,20 +1,8 @@
-const Joi = require('joi');
 const characters = require('express').Router();
-const { characters: characterDefinitions } = require('gm-common');
-const charactersData = require('../../data/characters');
-const status = require('../../utils/statusMessages');
-const { validator } = require('../../utils/validator');
-
-const postCharacterBody = Joi.object({
-  gameId: Joi.string().required(),
-  playerId: Joi.string().required(),
-  name: Joi.string().required(),
-  class: Joi.string().valid(characterDefinitions.classTypes).required(),
-  race: Joi.string().valid(characterDefinitions.raceTypes).required()
-});
-
-console.log('Class Types: %o', characterDefinitions.classTypes);
-console.log('Race Types: %o', characterDefinitions.raceTypes);
+const charactersData = require('../data/characters');
+const status = require('../utils/statusMessages');
+const { validator } = require('../utils/validator');
+const { postCharacterBody, getCharacterQuery } = require('./validation/characters');
 
 characters.post('/', validator.body(postCharacterBody), async (req, res) => {
   const { body: { createdBy, ...attributes } } = req;
@@ -33,12 +21,6 @@ characters.post('/', validator.body(postCharacterBody), async (req, res) => {
   if (!newCharacter) return status.serverError(res, 'Failed', `Failed to create character [${character.name}]`);
 
   return status.created(res, { ...newCharacter });
-});
-
-const getCharacterQuery = Joi.object({
-  pageNum: Joi.number(),
-  pageSize: Joi.number(),
-  playerId: Joi.string()
 });
 
 characters.get('/', validator.query(getCharacterQuery), async (req, res) => {
