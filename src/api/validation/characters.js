@@ -1,12 +1,14 @@
 const Joi = require('joi');
-const { characters: characterDefinitions } = require('gm-common');
+const { characters } = require('gm-common');
 
 const postCharacterBody = Joi.object({
   gameId: Joi.string().required(),
   playerId: Joi.string().required(),
   name: Joi.string().required(),
-  class: Joi.string().valid(characterDefinitions.classTypes).required(),
-  race: Joi.string().valid(characterDefinitions.raceTypes).required()
+  class: Joi.string().valid(characters.classTypes).required(),
+  race: Joi.string().valid(characters.raceTypes).required(),
+  order: Joi.string().valid(characters.alignments.orderTypes).required(),
+  morality: Joi.string().valid(characters.alignments.moralityTypes).required()
 });
 
 const getCharacterQuery = Joi.object({
