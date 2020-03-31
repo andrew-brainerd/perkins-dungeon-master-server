@@ -18,7 +18,7 @@ const createGame = async (name, createdBy) => {
     GAMES_COLLECTION, {
     name,
     createdBy,
-    members: [createdBy]
+    players: [createdBy]
   });
 
   log.success(`Created new game ${newGame.name} (${newGame._id})`);
