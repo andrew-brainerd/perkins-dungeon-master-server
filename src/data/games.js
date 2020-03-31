@@ -111,7 +111,7 @@ command({
 });
 
 command({
-  verb: ['char', 'characters'],
+  verb: ['chars', 'characters'],
   accept: [Format.V],
   async func({ context }) {
     const { playerInput } = context;
