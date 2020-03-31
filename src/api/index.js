@@ -1,8 +1,9 @@
 const router = require('express').Router();
+const appInfo = require('../../package.json');
 
 router.get('/', (req, res) => {
   res.send({
-    message: `Welcome to the Anorak API!`
+    message: `Welcome to the Anorak API v${appInfo.version}!`
   });
 });
 
