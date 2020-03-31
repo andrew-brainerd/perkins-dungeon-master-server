@@ -142,20 +142,6 @@ command({
 });
 
 command({
-  verb: ['newCharacter'],
-  accept: [Format.V],
-  async func({ context }) {
-    context.response = getUniqueMessage({
-      ...characters.GAME_MASTER,
-      message: 'Create A New Character',
-      requiresPlayerInput: true
-    });
-
-    return CommandResult.HANDLED;
-  }
-});
-
-command({
   verb: ['gm-give'],
   accept: [Format.VOPS, Format.VSDO],
   async func({ subject, object, context }) {
