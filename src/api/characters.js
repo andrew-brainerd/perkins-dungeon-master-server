@@ -2,17 +2,16 @@ const characters = require('express').Router();
 const charactersData = require('../data/characters');
 const status = require('../utils/statusMessages');
 const { validator } = require('../utils/validator');
-const { postCharacterBody, getCharacterQuery } = require('./validation/characters');
+const { postCharacterBody, getGameCharactersQuery } = require('./validation/characters');
 
 characters.post('/', validator.body(postCharacterBody), async (req, res) => {
-  const { body: { createdBy, ...attributes } } = req;
+  const { body: { ...attributes } } = req;
 
   const character = {
     ...attributes,
     level: 1,
     background: 'Acolyte',
     location: 'startLocationGuid',
-    playerId: createdBy,
     experiencePoints: 0,
     remainingSpells: 3,
     inventory: [],
@@ -32,14 +31,14 @@ characters.post('/', validator.body(postCharacterBody), async (req, res) => {
   return status.created(res, { ...newCharacter });
 });
 
-characters.get('/', validator.query(getCharacterQuery), async (req, res) => {
-  const { query: { pageNum, pageSize, playerId } } = req;
+characters.get('/', validator.query(getGameCharactersQuery), async (req, res) => {
+  const { query: { pageNum, pageSize, gameId } } = req;
   const page = parseInt(pageNum) || 1;
   const size = parseInt(pageSize) || 50;
 
-  const { items, totalItems, totalPages } = await charactersData.getPlayerCharacters(page, size, playerId);
+  const { items, totalItems, totalPages } = await charactersData.getGameCharacters(page, size, gameId);
 
-  if (!items) return status.serverError(res, 'Failed', 'Failed to get player characters');
+  if (!items) return status.serverError(res, 'Failed', 'Failed to get game characters');
 
   return status.success(res, {
     items,

@@ -18,7 +18,7 @@ const createGame = async (name, createdBy) => {
     GAMES_COLLECTION, {
     name,
     createdBy,
-    members: [createdBy]
+    players: [createdBy]
   });
 
   log.success(`Created new game ${newGame.name} (${newGame._id})`);
@@ -115,7 +115,7 @@ command({
 });
 
 command({
-  verb: ['char', 'characters'],
+  verb: ['chars', 'characters'],
   accept: [Format.V],
   async func({ context }) {
     const { playerInput } = context;
@@ -139,20 +139,6 @@ command({
       message: !isEmpty(gameCharacters) ?
         serverMessage :
         'No characters in this game yet'
-    });
-
-    return CommandResult.HANDLED;
-  }
-});
-
-command({
-  verb: ['newCharacter'],
-  accept: [Format.V],
-  async func({ context }) {
-    context.response = getUniqueMessage({
-      ...characters.GAME_MASTER,
-      message: 'Create A New Character',
-      requiresPlayerInput: true
     });
 
     return CommandResult.HANDLED;

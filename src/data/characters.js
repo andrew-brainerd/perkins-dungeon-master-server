@@ -25,8 +25,8 @@ const createCharacter = async character => {
   return newCharacter;
 };
 
-const getPlayerCharacters = async (page, size, playerId) => {
-  return await data.getSome(CHARACTERS_COLLECTION, page, size, 'createdBy', playerId);
+const getGameCharacters = async (page, size, gameId) => {
+  return await data.getSome(CHARACTERS_COLLECTION, page, size, 'gameId', gameId);
 };
 
 const getCharacter = async characterId => {
@@ -43,7 +43,7 @@ const updateCharacter = async character => {
 
 module.exports = {
   createCharacter,
-  getPlayerCharacters,
+  getGameCharacters,
   getCharacter,
   getCharacterByName,
   updateCharacter

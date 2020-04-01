@@ -19,7 +19,7 @@ def test_create_game_success():
   assert response.status_code == 201
   assert game['name'] == 'Test New Game'
   assert game['createdBy'] == '12345'
-  assert game['members'][0] == '12345'
+  assert game['players'][0] == '12345'
 
 def test_create_game_missing_name():
   url = f'{baseUrl}/api/games'
