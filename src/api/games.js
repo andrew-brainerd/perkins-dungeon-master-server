@@ -53,4 +53,12 @@ games.put('/:gameId',
     return status.success(res, { ...logAdded });
   });
 
+games.delete('/:gameId', validator.params(defaultGameParams), async (req, res) => {
+  const { params: { gameId } } = req;
+
+  await gamesData.deleteGame(gameId);
+
+  return status.success(res, { message: `Deleted game ${gameId}` });
+});
+
 module.exports = games;
