@@ -11,13 +11,13 @@ const postCharacterBody = Joi.object({
   morality: Joi.string().valid(characters.alignments.moralityTypes).required()
 });
 
-const getCharacterQuery = Joi.object({
+const getGameCharactersQuery = Joi.object({
   pageNum: Joi.number(),
   pageSize: Joi.number(),
-  playerId: Joi.string()
+  gameId: Joi.string()
 });
 
 module.exports = {
   postCharacterBody,
-  getCharacterQuery
+  getGameCharactersQuery
 };
