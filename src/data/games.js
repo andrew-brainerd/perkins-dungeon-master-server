@@ -53,6 +53,10 @@ const addLog = async (gameId, message) => {
   };
 };
 
+const deleteGame = async gameId => {
+  return await data.deleteOne(GAMES_COLLECTION, gameId);
+};
+
 const getUniqueMessage = message => ({
   messages: {
     id: uuidv1(),
@@ -290,5 +294,6 @@ module.exports = {
   getGames,
   getGame,
   getGameCharacters,
-  addLog
+  addLog,
+  deleteGame
 };
