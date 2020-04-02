@@ -12,6 +12,7 @@ const { articleForNoun, withUnits } = require('../utils/grammar');
 const { addItemToInventory, getCarryRatio, getInventory } = require('../gameLogic/inventory');
 const { getRaceFromType, getClassFromType } = require('../utils/characters');
 const { WEIGHT } = require('../constants/units');
+const { getPlayerById } = require('./players');
 
 const createGame = async (name, createdBy) => {
   const newGame = await data.insertOne(
@@ -55,6 +56,14 @@ const addLog = async (gameId, message) => {
 
 const deleteGame = async gameId => {
   return await data.deleteOne(GAMES_COLLECTION, gameId);
+};
+
+const getPlayers = async gameId => {
+  const { players } = await getGame(gameId);
+  
+  return Promise.all((players || []).map(
+    playerId => getPlayerById(playerId)
+  ));
 };
 
 const getUniqueMessage = message => ({
@@ -281,5 +290,6 @@ module.exports = {
   getGame,
   getGameCharacters,
   addLog,
-  deleteGame
+  deleteGame,
+  getPlayers
 };

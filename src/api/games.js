@@ -6,7 +6,8 @@ const {
   postGameBody,
   defaultGameParams,
   putGameBody,
-  getPlayerGamesQuery
+  getPlayerGamesQuery,
+  getGamePlayersParams
 } = require('./validation/games');
 
 games.post('/', validator.body(postGameBody), async (req, res) => {
@@ -59,6 +60,14 @@ games.delete('/:gameId', validator.params(defaultGameParams), async (req, res) =
   await gamesData.deleteGame(gameId);
 
   return status.success(res, { message: `Deleted game ${gameId}` });
+});
+
+games.get('/:gameId/players', validator.params(getGamePlayersParams), async (req, res) => {
+  const { params: { gameId } } = req;
+
+  const players = await gamesData.getPlayers(gameId);
+
+  return status.success(res, { players });
 });
 
 module.exports = games;
