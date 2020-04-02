@@ -67,7 +67,7 @@ games.get('/:gameId/players', validator.params(getGamePlayersParams), async (req
 
   const players = await gamesData.getPlayers(gameId);
 
-  return status.success(res, { players });
+  return status.success(res, { ...players });
 });
 
 module.exports = games;
