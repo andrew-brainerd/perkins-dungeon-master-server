@@ -23,10 +23,15 @@ const getGamePlayersParams = Joi.object({
   gameId: Joi.string().required()
 });
 
+const patchPlayersBody = Joi.object({
+  playerId: Joi.string().required()
+});
+
 module.exports = {
   postGameBody,
   defaultGameParams,
   putGameBody,
   getPlayerGamesQuery,
-  getGamePlayersParams
+  getGamePlayersParams,
+  patchPlayersBody
 };

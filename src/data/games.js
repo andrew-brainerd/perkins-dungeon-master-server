@@ -66,6 +66,10 @@ const getPlayers = async gameId => {
   ));
 };
 
+const addPlayer = async (gameId, playerId) => {
+  return await data.addToSet(GAMES_COLLECTION, gameId, { 'players': playerId })
+};
+
 const getUniqueMessage = message => ({
   messages: {
     id: uuidv1(),
@@ -291,5 +295,6 @@ module.exports = {
   getGameCharacters,
   addLog,
   deleteGame,
-  getPlayers
+  getPlayers,
+  addPlayer
 };

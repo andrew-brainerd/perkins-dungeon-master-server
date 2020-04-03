@@ -7,7 +7,8 @@ const {
   defaultGameParams,
   putGameBody,
   getPlayerGamesQuery,
-  getGamePlayersParams
+  getGamePlayersParams,
+  patchPlayersBody
 } = require('./validation/games');
 
 games.post('/', validator.body(postGameBody), async (req, res) => {
@@ -25,7 +26,7 @@ games.get('/', validator.query(getPlayerGamesQuery), async (req, res) => {
   const size = parseInt(pageSize) || 50;
 
   const { items, totalItems, totalPages } = await gamesData.getGames(page, size, playerId);
-  
+
   if (!items) return status.serverError(res, 'Failed', 'Failed to get player games');
 
   return status.success(res, {
@@ -69,5 +70,15 @@ games.get('/:gameId/players', validator.params(getGamePlayersParams), async (req
 
   return status.success(res, { ...players });
 });
+
+games.patch('/:gameId/players',
+  validator.params(defaultGameParams),
+  validator.body(patchPlayersBody), async (req, res) => {
+    const { params: { gameId }, body: { playerId } } = req;
+
+    const addedPlayer = await gamesData.addPlayer(gameId, playerId);
+
+    return status.success(res, { ...addedPlayer });
+  });
 
 module.exports = games;
