@@ -1,6 +1,6 @@
 const { v1: uuidv1 } = require('uuid');
 const { isEmpty } = require('ramda');
-const { syncing, characters } = require('gm-common');
+const { events, characters } = require('gm-common');
 const data = require('../utils/data');
 const log = require('../utils/log');
 const { pusher } = require('../utils/pusher');
@@ -12,6 +12,7 @@ const { articleForNoun, withUnits } = require('../utils/grammar');
 const { addItemToInventory, getCarryRatio, getInventory } = require('../gameLogic/inventory');
 const { getRaceFromType, getClassFromType } = require('../utils/characters');
 const { WEIGHT } = require('../constants/units');
+const { getPlayerById } = require('./players');
 
 const createGame = async (name, createdBy) => {
   const newGame = await data.insertOne(
@@ -43,7 +44,7 @@ const addLog = async (gameId, message) => {
   const appendPlayerMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
   const appendServerMessage = await data.updateOne(GAMES_COLLECTION, gameId, serverResponse);
 
-  pusher.trigger(gameId, syncing.UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
+  pusher.trigger(gameId, events.GAME_UPDATED, { appendPlayerMessage, appendServerMessage });
 
   return {
     gameId,
@@ -55,6 +56,20 @@ const addLog = async (gameId, message) => {
 
 const deleteGame = async gameId => {
   return await data.deleteOne(GAMES_COLLECTION, gameId);
+};
+
+const getPlayers = async gameId => {
+  const { players } = await getGame(gameId);
+  
+  return Promise.all((players || []).map(
+    playerId => getPlayerById(playerId)
+  ));
+};
+
+const addPlayer = async (gameId, playerId) => {
+  const addedPlayer = await data.addToSet(GAMES_COLLECTION, gameId, { 'players': playerId });
+
+  pusher.trigger(gameId, events.PLAYER_ADDED, { addedPlayer });
 };
 
 const getUniqueMessage = message => ({
@@ -281,5 +296,7 @@ module.exports = {
   getGame,
   getGameCharacters,
   addLog,
-  deleteGame
+  deleteGame,
+  getPlayers,
+  addPlayer
 };
