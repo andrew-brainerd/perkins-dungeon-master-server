@@ -79,6 +79,7 @@ games.patch('/:gameId/players',
     const addedPlayer = await gamesData.addPlayer(gameId, playerId);
 
     return status.success(res, { ...addedPlayer });
-  });
+  }
+);
 
 module.exports = games;
