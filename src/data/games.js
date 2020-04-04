@@ -1,6 +1,6 @@
 const { v1: uuidv1 } = require('uuid');
 const { isEmpty } = require('ramda');
-const { syncing, characters } = require('gm-common');
+const { events, characters } = require('gm-common');
 const data = require('../utils/data');
 const log = require('../utils/log');
 const { pusher } = require('../utils/pusher');
@@ -44,7 +44,7 @@ const addLog = async (gameId, message) => {
   const appendPlayerMessage = await data.updateOne(GAMES_COLLECTION, gameId, message);
   const appendServerMessage = await data.updateOne(GAMES_COLLECTION, gameId, serverResponse);
 
-  pusher.trigger(gameId, syncing.UPDATE_GAME, { appendPlayerMessage, appendServerMessage });
+  pusher.trigger(gameId, events.GAME_UPDATED, { appendPlayerMessage, appendServerMessage });
 
   return {
     gameId,
@@ -67,7 +67,9 @@ const getPlayers = async gameId => {
 };
 
 const addPlayer = async (gameId, playerId) => {
-  return await data.addToSet(GAMES_COLLECTION, gameId, { 'players': playerId })
+  const addedPlayer = await data.addToSet(GAMES_COLLECTION, gameId, { 'players': playerId });
+
+  pusher.trigger(gameId, events.PLAYER_ADDED, { addedPlayer });
 };
 
 const getUniqueMessage = message => ({
