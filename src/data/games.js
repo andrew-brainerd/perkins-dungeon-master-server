@@ -81,34 +81,6 @@ const getUniqueMessage = message => ({
 });
 
 command({
-  verb: ['login', 'signin'],
-  accept: [Format.V],
-  async func({ context }) {
-    const { playerInput } = context;
-    context.response = getUniqueMessage({
-      ...characters.AUTH_USER,
-      message: playerInput.messages.isAuthenticated ? 'Already signed in :D' : 'Signing In...'
-    });
-
-    return CommandResult.HANDLED;
-  }
-});
-
-command({
-  verb: ['logout', 'signout'],
-  accept: [Format.V],
-  async func({ context }) {
-    const { playerInput } = context;
-    context.response = getUniqueMessage({
-      ...characters.AUTH_USER,
-      message: playerInput.messages.isAuthenticated ? 'Signing Out...' : 'Not signed in'
-    });
-
-    return CommandResult.HANDLED;
-  }
-});
-
-command({
   verb: 'newgame',
   accept: [Format.V],
   async func({ context }) {
